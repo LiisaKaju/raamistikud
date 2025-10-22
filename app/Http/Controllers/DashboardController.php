@@ -14,22 +14,21 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
-        //https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
-        //?q={city name}&appid={API key}
 
-        $value = Cache::remember('waether', now()->addHour(), function () {
-   $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
-            'q'=> 'Kuressaare',
-            'appid'=> config('services.weather.key'),
-            'units'=> 'metric',
+        $value = Cache::remember('weather', now()->addHour(), function () {
+            $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
+                'q' => 'Kuressaare',
+                'appid' => config('services.weather.key'),
+                'units' => 'metric',
 
+            ]);
+
+            return $response->json();
+        });
+
+
+        return Inertia::render('Dashboard', [
+            'weather' => $value
         ]);
-
-        return $response->json();
-});
-
-        
-        dd($value);
-        return Inertia::render('Dashboard');
     }
 }
