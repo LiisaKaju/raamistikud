@@ -13,7 +13,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('posts/Index', [
+            'posts'=>Post::paginate(30),
+        ]);
     }
 
     /**
@@ -29,7 +31,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Post::create($request->validate([
+            'title'=>'required|string|max:255',
+            'content' =>'required|string',
+            'author' =>'required|string|max:255',
+            'published'=>'boolean',
+        ]));
+
+        return redirect()->route('posts.index');
     }
 
     /**
