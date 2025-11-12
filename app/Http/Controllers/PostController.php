@@ -41,6 +41,7 @@ class PostController extends Controller
         return redirect()->route('posts.index');
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -54,7 +55,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return Inertia::render('posts/Edit', [
+        'post' => $post, // <-- saadab Vue komponendile post objekti
+    ]);
     }
 
     /**
@@ -62,7 +65,16 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'content' => 'required|string',
+        'author' => 'required|string|max:255',
+        'published' => 'boolean',
+    ]);
+
+    $post->update($validated);
+
+    return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
 
     /**
@@ -70,6 +82,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+         $post->delete();
+
+    return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 }

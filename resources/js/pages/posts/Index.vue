@@ -106,13 +106,22 @@ defineProps<{
                                         <MoreVertical />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem @click="router.get(route('posts.edit', post.id))"> Edit </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem class="text-destructive" @click="router.delete(route('posts.destroy', post.id))">
-                                        Delete
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
+                              <DropdownMenuContent>
+ <DropdownMenuItem @click="() => router.get(`/posts/${post.id}/edit`)">
+  Edit
+</DropdownMenuItem>
+
+<DropdownMenuSeparator />
+
+<DropdownMenuItem
+  class="text-destructive"
+  @click="() => router.delete(`/posts/${post.id}`)"
+>
+  Delete
+</DropdownMenuItem>
+
+</DropdownMenuContent>
+
                             </DropdownMenu>
                         </div>
                     </TableCell>

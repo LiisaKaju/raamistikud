@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::resource('posts', PostController::class);
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -12,7 +15,9 @@ Route::get('dashboard', DashboardController::class)->middleware(['auth', 'verifi
 
 Route::get('/test', function() {
     return 'tere';
+    
 }
+
 );
 
 require __DIR__.'/settings.php';
