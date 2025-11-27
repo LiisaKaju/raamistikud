@@ -7,22 +7,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Post extends Model
+class Comment extends Model
 {
-
     use HasFactory;
-    
+
     protected $fillable = [
-        'title',
+        'user_id',
+        'post_id',
         'content',
-        'author_id',
-        'published',
     ];
+
+
     protected $appends = [
-      'created_at_formated',
+        'created_at_formated',
         'updated_at_formated'
-    ];    
-  
+    ];
      
 
 
@@ -40,19 +39,15 @@ class Post extends Model
         );
     }
 
-    public function author (): BelongsTo
+    public function comments(): BelongsTo
     {
-        return $this->belongsTo(Author::class, 'author_id');
+        return $this->belongsTo(Post::class, 'post_id');
     }
 
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
-    
-    public function comments()
-{
-    return $this->hasMany(Comment::class);
-}
+
 
 }

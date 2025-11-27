@@ -1,153 +1,130 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Head, useForm, router } from '@inertiajs/vue3'
-import InputError from '@/components/InputError.vue'
-import Button from '@/components/ui/button/Button.vue'
-import Input from '@/components/ui/input/Input.vue'
-import Label from '@/components/ui/label/Label.vue'
-import Switch from '@/components/ui/switch/Switch.vue'
-import Textarea from '@/components/ui/textarea/Textarea.vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { type BreadcrumbItem } from '@/types'
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, useForm, router } from '@inertiajs/vue3';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { index, update } from '@/routes/posts';
+import type { BreadcrumbItem } from '@/types';
 
-/**
- * TYPED POST (muuda vastavalt oma mudelile)
- */
-type Post = {
-  id: number | string
-  title?: string
-  content?: string
-  author?: string
-  published?: boolean
-}
+// kui kasutad shadcn/vue selecti, siis midagi sellist:
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 
-/**
- * Props — Inertia peab saatma `post`
- */
-const props = defineProps<{ post: Post }>()
+// kohanda õigeks rajaks, kus InputError sul tegelikult asub
+import InputError from '@/components/InputError.vue';
 
-/**
- * Breadcrumbs — kui kasutad edit() helperit, võid siin asendada
- */
+const props = defineProps<{
+  post: {
+    id: number;
+    title: string;
+    content: string;
+    author_id: string;
+    published: boolean;
+    created_at_formatted?: string;
+    updated_at_formatted?: string;
+  };
+  authors: Record<number, string>;
+}>();
+
+console.log(props.authors);
+
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Posts edit',
-    href: typeof window !== 'undefined' && typeof (window as any).route === 'function'
-      ? (window as any).route('posts.edit', props.post.id)
-      : `/posts/${props.post.id}/edit`,
-  },
-]
-
-/**
- * Fallback URL builder (kui Ziggy puudub)
- */
-const buildUrl = (name: string, id?: number | string) => {
-  if (typeof window !== 'undefined' && typeof (window as any).route === 'function') {
-    try {
-      return (window as any).route(name, id)
-    } catch (e) {
-      // fallthrough to fallback
-    }
-  }
-
-  if (name === 'posts.update' && id !== undefined) return `/posts/${id}`
-  if (name === 'posts.index') return `/posts`
-  if (name === 'posts.edit' && id !== undefined) return `/posts/${id}/edit`
-  return id ? `/posts/${id}` : `/posts`
-}
+  { title: 'Posts', href: index().url },
+  { title: `Edit Post #${props.post.id}`, href: `/posts/${props.post.id}/edit` },
+];
 
 const form = useForm({
-  title: props.post?.title ?? '',
-  content: props.post?.content ?? '',
-  author: props.post?.author ?? '',
-  published: !!props.post?.published,
-})
+  title: props.post.title,
+  content: props.post.content,
+  author_id: props.post.author_id,
+  published: props.post.published,
+});
 
-const genericError = ref<string | null>(null)
-
-/**
- * Submit: kasutame PUT (posts.update)
- */
-const submit = async () => {
-  genericError.value = null
-  const url = buildUrl('posts.update', props.post.id)
-
-  try {
-    await form.put(url, {
-      onSuccess: () => {
-        // optional: router.visit(buildUrl('posts.index'))  — Inertia server võib redirect'ida
-      },
-      onError: () => {
-        // form.errors täitub automaatselt
-      },
-    })
-  } catch (err) {
-    genericError.value = 'Something went wrong. Check console.'
-    // eslint-disable-next-line no-console
-    console.error(err)
-  }
-}
-
-/**
- * Cancel
- */
-const cancel = () => {
-  router.visit(buildUrl('posts.index'))
-}
+const submit = () => {
+  form.put(update(props.post.id).url, {
+    preserveScroll: true,
+  });
+};
 </script>
 
 <template>
-  <Head title="Edit Post" />
+  <Head :title="`Edit Post #${props.post.id}`" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-      <div class="mx-auto h-full w-full max-w-2xl p-4">
-        <h3 class="text-lg font-medium mb-4">Post Edit</h3>
+    <div class="max-w-2xl mx-auto p-6 flex flex-col gap-6">
+      <h1 class="text-2xl font-semibold">Edit Post</h1>
 
-        <form @submit.prevent="submit" novalidate>
-          <div class="mt-6 grid gap-4">
-            <div>
-              <Label for="title">Title</Label>
-              <Input class="mt-1" id="title" v-model="form.title" :disabled="form.processing" />
-              <InputError :message="form.errors.title" />
-            </div>
+      <form @submit.prevent="submit" class="flex flex-col gap-4">
+        <div>
+          <Label for="title">Title</Label>
+          <Input id="title" v-model="form.title" />
+          <p v-if="form.errors.title" class="text-red-600 text-sm">
+            {{ form.errors.title }}
+          </p>
+        </div>
 
-            <div>
-              <Label for="content">Content</Label>
-              <Textarea class="mt-1" id="content" v-model="form.content" :disabled="form.processing" />
-              <InputError :message="form.errors.content" />
-            </div>
+        <div>
+          <Label for="author">Author</Label>
+          <Select v-model="form.author_id">
+            <SelectTrigger>
+              <SelectValue placeholder="Select an author" />
+            </SelectTrigger>
+            <SelectContent class="w-(--reka-select-trigger-width)">
+              <SelectGroup>
+                <SelectItem
+                  v-for="(name, id) in props.authors"
+                  :key="id"
+                  :value="String(id)"
+                >
+                  {{ name }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <InputError :message="form.errors.author_id" />
+        </div>
 
-            <div>
-              <Label for="author">Author</Label>
-              <Input class="mt-1" id="author" v-model="form.author" :disabled="form.processing" />
-              <InputError :message="form.errors.author" />
-            </div>
+        <div>
+          <Label for="content">Content</Label>
+          <Textarea id="content" rows="6" v-model="form.content" />
+          <p v-if="form.errors.content" class="text-red-600 text-sm">
+            {{ form.errors.content }}
+          </p>
+        </div>
 
-            <div class="mt-4 flex items-center space-x-2">
-              <!-- Switch peab olema seotud form.published-ga -->
-              <Switch id="published" v-model="form.published" />
-              <Label for="published">Published</Label>
-            </div>
-          </div>
+        <div class="flex items-center justify-between">
+          <Label for="published">Published</Label>
+          <Switch id="published" v-model:checked="form.published" />
+          <!-- kui sinu Switch kasutab lihtsalt v-model, siis: v-model="form.published" -->
+        </div>
 
-          <div class="mt-6 flex justify-end space-x-2">
-            <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg" @click="cancel" :disabled="form.processing">Cancel</button>
+        <div class="text-sm text-gray-500 mt-2">
+          <p>Created at: {{ props.post.created_at_formatted }}</p>
+          <p>Last updated: {{ props.post.updated_at_formatted }}</p>
+        </div>
 
-            <Button :disabled="form.processing">
-              <template #default>
-                <span v-if="form.processing">Saving…</span>
-                <span v-else>Save</span>
-              </template>
-            </Button>
-          </div>
-
-          <p v-if="genericError" class="mt-4 text-sm text-red-600">{{ genericError }}</p>
-
-          <!-- Debug: eemalda tootmises -->
-          <pre class="mt-6 text-xs">{{ form }}</pre>
-        </form>
-      </div>
+        <div class="flex gap-3 mt-4">
+          <Button type="submit" :disabled="form.processing">
+            Save Changes
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            @click="router.visit(index().url)"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     </div>
   </AppLayout>
 </template>

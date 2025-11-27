@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,7 @@ class PostFactory extends Factory
         return [
             'title'=>$this->faker->sentence(),
             'content'=>$this->faker->text(),
-            'author'=>$this->faker->name(),
+            'author_id'=>Author::factory(),
             'published'=>$this->faker->boolean(),
         ];
     }

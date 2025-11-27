@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::resource('posts', PostController::class);
+Route::resource('authors', AuthorController::class);
 
 Route::get('/', function () {
     return Inertia::render('Welcome');

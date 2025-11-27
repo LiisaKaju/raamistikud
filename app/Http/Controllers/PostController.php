@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,16 +15,20 @@ class PostController extends Controller
     public function index()
     {
         return Inertia::render('posts/Index', [
-            'posts'=>Post::paginate(30),
+            'posts'=>Post::with('author:id,first_name,last_name')->paginate(30),
         ]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
+
     {
-        return Inertia::render('posts/Create');
+        return Inertia::render ('posts/Create', [
+            'authors' => Author::all()->mapWithKeys(fn ($author)=> [$author->id => $author->first_name.' '.$author->last_name])
+        ]);
     }
 
     /**
@@ -34,7 +39,7 @@ class PostController extends Controller
         Post::create($request->validate([
             'title'=>'required|string|max:255',
             'content' =>'required|string',
-            'author' =>'required|string|max:255',
+            'author_id' =>'required|integer|exists:authors,id',
             'published'=>'boolean',
         ]));
 
@@ -42,12 +47,13 @@ class PostController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     */
+  
+
     public function show(Post $post)
     {
-        //
+        return Inertia::render('posts/Show', [
+            'post'=> $post->loadMissing('author')
+        ]);
     }
 
     /**
@@ -55,8 +61,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        
         return Inertia::render('posts/Edit', [
         'post' => $post, // <-- saadab Vue komponendile post objekti
+          'authors' => Author::all()->mapWithKeys(fn ($author)=> [$author->id => $author->first_name.' '.$author->last_name])
     ]);
     }
 
@@ -68,7 +76,7 @@ class PostController extends Controller
         $validated = $request->validate([
         'title' => 'required|string|max:255',
         'content' => 'required|string',
-        'author' => 'required|string|max:255',
+        'author_id' => 'required|string|max:255',
         'published' => 'boolean',
     ]);
 
