@@ -2,6 +2,7 @@ import:
   - recipe/laravel.php
 
 config:
+  ssh_multiplexing: false
   repository: 'git@github.com:LiisaKaju/raamistikud.git'
   keep_releases: 2
 
