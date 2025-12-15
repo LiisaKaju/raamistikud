@@ -2,57 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\HasFormattedDate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
+    use HasFactory, HasFormattedDate;
 
-    use HasFactory;
-    
     protected $fillable = [
         'title',
         'content',
         'author_id',
         'published',
     ];
+
     protected $appends = [
-      'created_at_formated',
-        'updated_at_formated'
-    ];    
-  
-     
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
 
-
-    protected function createdAtFormated(): Attribute
-    {
-        return Attribute::make(
-            get: fn()=>$this->updated_at?->diffForHumans()
-        );
-    }
-
-    protected function updatedAtFormated(): Attribute
-    {
-        return Attribute::make(
-            get: fn()=>$this->updated_at?->diffForHumans()
-        );
-    }
-
-    public function author (): BelongsTo
+    public function author(): BelongsTo
     {
         return $this->belongsTo(Author::class, 'author_id');
     }
 
-    public function posts()
-    {
-        return $this->hasMany(Post::class);
-    }
-    
     public function comments()
-{
-    return $this->hasMany(Comment::class);
-}
-
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

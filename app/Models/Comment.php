@@ -6,17 +6,14 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasFormattedDate;
 
 class Comment extends Model
 {
     use HasFactory;
+    use HasFormattedDate;
 
-    protected $fillable = [
-        'user_id',
-        'post_id',
-        'content',
-    ];
-
+    protected $guarded= [];
 
     protected $appends = [
         'created_at_formated',
