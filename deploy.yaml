@@ -2,7 +2,6 @@ import:
   - recipe/laravel.php
 
 config:
-  ssh_multiplexing: false
   repository: 'git@github.com:LiisaKaju/raamistikud.git'
   keep_releases: 2
 
@@ -28,8 +27,8 @@ tasks:
     - 'deploy:vendors'
     - 'npm:production'
     - 'artisan:storage:link'
-    # - 'artisan:optimize:clear'
-    # - 'artisan:optimize'
+    - 'artisan:optimize:clear'
+    - 'artisan:optimize'
     - 'deploy:publish'
 
 after:
