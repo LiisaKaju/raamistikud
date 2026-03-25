@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import GoogleLogo from '@/components/GoogleLogo.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
+import { googleLogin, register } from '@/routes';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
@@ -76,6 +77,14 @@ defineProps<{
                     <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
                     Log in
                 </Button>
+
+                <a
+                    :href="googleLogin().url"
+                    class="inline-flex w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                    <GoogleLogo class="h-4 w-4" />
+                    <span>Sign in with Google</span>
+                </a>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">

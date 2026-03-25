@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
+import GoogleLogo from '@/components/GoogleLogo.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import { googleLogin } from '@/routes';
 </script>
 
 <template>
@@ -55,9 +56,16 @@ import { LoaderCircle } from 'lucide-vue-next';
                 </div>
 
                 <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="processing">
-                    <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
                     Create account
                 </Button>
+                <a
+                    :href="googleLogin().url"
+                    class="inline-flex w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                    tabindex="5"
+                >
+                    Sign in with Google
+                    <GoogleLogo class="h-4 w-4" />
+                </a>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">

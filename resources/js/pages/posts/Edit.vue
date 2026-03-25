@@ -5,37 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { index, update } from '@/routes/posts';
 import type { BreadcrumbItem } from '@/types';
-
-// kui kasutad shadcn/vue selecti, siis midagi sellist:
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from '@/components/ui/select';
-
-// kohanda õigeks rajaks, kus InputError sul tegelikult asub
 import InputError from '@/components/InputError.vue';
 
 const props = defineProps<{
   post: {
     id: number;
     title: string;
-    content: string;
-    author_id: string;
-    published: boolean;
+    description: string;
     created_at_formatted?: string;
     updated_at_formatted?: string;
   };
-  authors: Record<number, string>;
 }>();
-
-console.log(props.authors);
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Posts', href: index().url },
@@ -44,9 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const form = useForm({
   title: props.post.title,
-  content: props.post.content,
-  author_id: props.post.author_id,
-  published: props.post.published,
+  description: props.post.description,
 });
 
 const submit = () => {
@@ -73,38 +53,11 @@ const submit = () => {
         </div>
 
         <div>
-          <Label for="author">Author</Label>
-          <Select v-model="form.author_id">
-            <SelectTrigger>
-              <SelectValue placeholder="Select an author" />
-            </SelectTrigger>
-            <SelectContent class="w-(--reka-select-trigger-width)">
-              <SelectGroup>
-                <SelectItem
-                  v-for="(name, id) in props.authors"
-                  :key="id"
-                  :value="String(id)"
-                >
-                  {{ name }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <InputError :message="form.errors.author_id" />
-        </div>
-
-        <div>
-          <Label for="content">Content</Label>
-          <Textarea id="content" rows="6" v-model="form.content" />
-          <p v-if="form.errors.content" class="text-red-600 text-sm">
-            {{ form.errors.content }}
+          <Label for="description">Description</Label>
+          <Textarea id="description" rows="6" v-model="form.description" />
+          <p v-if="form.errors.description" class="text-red-600 text-sm">
+            {{ form.errors.description }}
           </p>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <Label for="published">Published</Label>
-          <Switch id="published" v-model:checked="form.published" />
-          <!-- kui sinu Switch kasutab lihtsalt v-model, siis: v-model="form.published" -->
         </div>
 
         <div class="text-sm text-gray-500 mt-2">

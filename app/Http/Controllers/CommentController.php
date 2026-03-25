@@ -73,6 +73,14 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $isAdmin = (int) (auth()->user()?->is_admin ?? 0) === 1;
+
+        if (! $isAdmin) {
+            abort(403);
+        }
+
+        $comment->delete();
+
+        return redirect()->back();
     }
 }

@@ -8,7 +8,12 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Socialite;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -34,8 +39,40 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
-});
 
+    Route::get('/auth/redirect', function () {
+        return Socialite::driver('google')->redirect();
+    })->name('google-login');
+
+    Route::get('/auth/callback', function () {
+        $googleUser = Socialite::driver('google')->user();
+        $email = $googleUser->getEmail();
+
+        if (! $email) {
+            return redirect()->route('login')->with('status', 'Google kontolt ei leitud e-maili.');
+        }
+
+        $supportsGoogleId = Schema::hasColumn('users', 'google_id');
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => $googleUser->getName() ?: 'Google User',
+                'password' => Str::random(32),
+                'email_verified_at' => now(),
+                ...($supportsGoogleId ? ['google_id' => $googleUser->getId()] : []),
+            ]
+        );
+
+        if ($supportsGoogleId && ! $user->google_id) {
+            $user->google_id = $googleUser->getId();
+            $user->save();
+        }
+
+        Auth::login($user, true);
+
+        return redirect()->route('dashboard');
+    })->name('google-callback');
+});
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');

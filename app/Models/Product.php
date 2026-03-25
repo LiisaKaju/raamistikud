@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasFormattedDate;          
 
 class Product extends Model
 {
    use HasFactory;
-   use HasFormatedDate;
+   use HasFormattedDate;
     
     protected $fillable = [
         'id',

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,7 +14,7 @@ class PostController extends Controller
     public function index()
     {
         return Inertia::render('posts/Index', [
-            'posts'=>Post::with('author:id,first_name,last_name')->paginate(30),
+            'posts'=>Post::paginate(30),
         ]);
     }
     
@@ -26,9 +25,7 @@ class PostController extends Controller
     public function create()
 
     {
-        return Inertia::render ('posts/Create', [
-            'authors' => Author::all()->mapWithKeys(fn ($author)=> [$author->id => $author->first_name.' '.$author->last_name])
-        ]);
+        return Inertia::render ('posts/Create');
     }
 
     /**
@@ -36,12 +33,12 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        Post::create($request->validate([
+        $validated = $request->validate([
             'title'=>'required|string|max:255',
-            'content' =>'required|string',
-            'author_id' =>'required|integer|exists:authors,id',
-            'published'=>'boolean',
-        ]));
+            'description' =>'required|string',
+        ]);
+
+        Post::create($validated);
 
         return redirect()->route('posts.index');
     }
@@ -52,7 +49,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         return Inertia::render('posts/Show', [
-            'post'=> $post->loadMissing('author', 'comments.user')
+            'post'=> $post->loadMissing('comments.user')
         ]);
     }
 
@@ -63,9 +60,8 @@ class PostController extends Controller
     {
         
         return Inertia::render('posts/Edit', [
-        'post' => $post, // <-- saadab Vue komponendile post objekti
-          'authors' => Author::all()->mapWithKeys(fn ($author)=> [$author->id => $author->first_name.' '.$author->last_name])
-    ]);
+            'post' => $post,
+        ]);
     }
 
     /**
@@ -75,9 +71,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
         'title' => 'required|string|max:255',
-        'content' => 'required|string',
-        'author_id' => 'required|string|max:255',
-        'published' => 'boolean',
+        'description' => 'required|string',
     ]);
 
     $post->update($validated);

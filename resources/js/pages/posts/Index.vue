@@ -51,18 +51,11 @@ interface PaginatedResponse {
 export type Post = {
   id: number;
   title: string;
-  content: string;
-  author_id: number;
-  published: boolean;
+  description: string;
   created_at: string;
   updated_at: string;
   created_at_formatted: string;
   updated_at_formatted: string;
-  author: {
-    id: number;
-    first_name: string;
-    last_name: string;
-  };
   comments?: [
     {
     id: number;
@@ -126,10 +119,8 @@ const deletePost = (postId: number) => {
           <TableRow>
             <TableHead class="w-[100px]">ID</TableHead>
             <TableHead>Title</TableHead>
-            <TableHead>Author</TableHead>
             <TableHead class="text-right">Created at</TableHead>
             <TableHead class="text-right">Updated At</TableHead>
-            <TableHead class="text-right">Published</TableHead>
             <TableHead>
               <span class="sr-only">Actions</span>
             </TableHead>
@@ -140,14 +131,8 @@ const deletePost = (postId: number) => {
           <TableRow v-for="post in posts.data" :key="post.id">
             <TableCell class="font-medium">{{ post.id }}</TableCell>
             <TableCell>{{ post.title }}</TableCell>
-            <TableCell>{{ post.author.first_name }} {{ post.author.last_name }}</TableCell>
             <TableCell class="text-right">{{ post.created_at_formatted }}</TableCell>
             <TableCell class="text-right">{{ post.updated_at_formatted }}</TableCell>
-            <TableCell class="text-right">
-              <span :class="post.published ? 'text-green-600' : 'text-gray-400'">
-                {{ post.published ? 'Yes' : 'No' }}
-              </span>
-            </TableCell>
 
             <TableCell>
               <div class="flex justify-end">

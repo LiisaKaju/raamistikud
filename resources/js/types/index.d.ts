@@ -36,6 +36,7 @@ export interface User {
 
 export type BreadcrumbItemType = BreadcrumbItem;
 export interface WeatherData {
+  name?: string;
   coord: {
     lon: number;
     lat: number;

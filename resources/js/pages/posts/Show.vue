@@ -3,10 +3,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/posts';
 import { type BreadcrumbItem } from '@/types';
 import { Post } from './Index.vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { add } from '@/routes/comments';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 const props = defineProps<{ post: Post }>();
+const page = usePage();
+const isAdmin = Number((page.props as any)?.auth?.user?.is_admin ?? 0) === 1;
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Posts',
@@ -28,6 +31,11 @@ const submit = () => {
 };
 };
 
+const deleteComment = (id: number) => {
+  if (!confirm('Kustuta kommentaar?')) return;
+  router.delete(`/comments/${id}`, { preserveScroll: true });
+};
+
 </script>
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
@@ -36,16 +44,15 @@ const submit = () => {
         <header class="rounded-xl bg-muted/40 p-6 shadow-sm">
           <h1 class="text-3xl font-semibold tracking-tight">{{ props.post.title }}</h1>
           <p class="mt-2 text-sm text-muted-foreground">
-            By {{ props.post.author.first_name }} {{ props.post.author.last_name }} |
             Created at: {{ props.post.created_at_formatted }} |
             Updated at: {{ props.post.updated_at_formatted }}
           </p>
         </header>
         <!-- Post Content -->
         <section class="rounded-xl border border-border/60 bg-background p-6 shadow-sm">
-          <h2 class="mb-4 text-lg font-semibold text-foreground">Content</h2>
+          <h2 class="mb-4 text-lg font-semibold text-foreground">Description</h2>
           <div class="prose max-w-none text-sm leading-relaxed text-foreground/90 dark:prose-invert">
-            <p class="whitespace-pre-line">{{ props.post.content }}</p>
+            <p class="whitespace-pre-line">{{ props.post.description }}</p>
           </div>
         </section>
         <section class="bg-gray-50 p-6 rounded-xl shadow-sm">
@@ -75,7 +82,10 @@ const submit = () => {
                     <span class="font-medium text-gray-800">{{ comment.user.name }}</span>
                     <span class="text-sm text-gray-400">#{{ comment.id }}</span>
                   </div>
-                  <span class="text-xs text-gray-400">{{ comment.created_at_formatted }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400">{{ comment.created_at_formatted }}</span>
+                    <button v-if="isAdmin" class="text-xs text-red-600" @click="deleteComment(comment.id)">Delete</button>
+                  </div>
                 </div>
                 <p class="text-gray-700">{{ comment.content }}</p>
               </li>
