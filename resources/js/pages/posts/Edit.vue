@@ -7,77 +7,69 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index, update } from '@/routes/posts';
 import type { BreadcrumbItem } from '@/types';
-import InputError from '@/components/InputError.vue';
 
 const props = defineProps<{
-  post: {
-    id: number;
-    title: string;
-    description: string;
-    created_at_formatted?: string;
-    updated_at_formatted?: string;
-  };
+    post: {
+        id: number;
+        title: string;
+        content: string;
+        created_at_formatted?: string;
+        updated_at_formatted?: string;
+    };
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Posts', href: index().url },
-  { title: `Edit Post #${props.post.id}`, href: `/posts/${props.post.id}/edit` },
+    { title: 'Postitused', href: index().url },
+    { title: `Muuda postitust #${props.post.id}`, href: `/posts/${props.post.id}/edit` },
 ];
 
 const form = useForm({
-  title: props.post.title,
-  description: props.post.description,
+    title: props.post.title,
+    content: props.post.content,
 });
 
 const submit = () => {
-  form.put(update(props.post.id).url, {
-    preserveScroll: true,
-  });
+    form.put(update(props.post.id).url, {
+        preserveScroll: true,
+    });
 };
 </script>
 
 <template>
-  <Head :title="`Edit Post #${props.post.id}`" />
+    <Head :title="`Muuda postitust #${post.id}`" />
 
-  <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="max-w-2xl mx-auto p-6 flex flex-col gap-6">
-      <h1 class="text-2xl font-semibold">Edit Post</h1>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="mx-auto flex max-w-2xl flex-col gap-6 p-6">
+            <h1 class="text-2xl font-semibold">Muuda postitust</h1>
 
-      <form @submit.prevent="submit" class="flex flex-col gap-4">
-        <div>
-          <Label for="title">Title</Label>
-          <Input id="title" v-model="form.title" />
-          <p v-if="form.errors.title" class="text-red-600 text-sm">
-            {{ form.errors.title }}
-          </p>
+            <form class="flex flex-col gap-4" @submit.prevent="submit">
+                <div>
+                    <Label for="title">Pealkiri</Label>
+                    <Input id="title" v-model="form.title" />
+                    <p v-if="form.errors.title" class="text-sm text-red-600">
+                        {{ form.errors.title }}
+                    </p>
+                </div>
+
+                <div>
+                    <Label for="content">Sisu</Label>
+                    <Textarea id="content" v-model="form.content" rows="6" />
+                    <p v-if="form.errors.content" class="text-sm text-red-600">
+                        {{ form.errors.content }}
+                    </p>
+                </div>
+
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>ID: {{ post.id }}</p>
+                    <p>Koostatud: {{ post.created_at_formatted }}</p>
+                    <p>Muudetud: {{ post.updated_at_formatted }}</p>
+                </div>
+
+                <div class="mt-4 flex gap-3">
+                    <Button type="submit" :disabled="form.processing"> Salvesta </Button>
+                    <Button type="button" variant="outline" @click="router.visit(index().url)"> Tühista </Button>
+                </div>
+            </form>
         </div>
-
-        <div>
-          <Label for="description">Description</Label>
-          <Textarea id="description" rows="6" v-model="form.description" />
-          <p v-if="form.errors.description" class="text-red-600 text-sm">
-            {{ form.errors.description }}
-          </p>
-        </div>
-
-        <div class="text-sm text-gray-500 mt-2">
-          <p>Created at: {{ props.post.created_at_formatted }}</p>
-          <p>Last updated: {{ props.post.updated_at_formatted }}</p>
-        </div>
-
-        <div class="flex gap-3 mt-4">
-          <Button type="submit" :disabled="form.processing">
-            Save Changes
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            @click="router.visit(index().url)"
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </div>
-  </AppLayout>
+    </AppLayout>
 </template>

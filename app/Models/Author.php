@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Author extends Model
 {
@@ -28,7 +29,7 @@ class Author extends Model
     protected function createdAtFormated(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->created_at?->diffForHumans()
+            get: fn () => $this->created_at?->diffForHumans()
         );
     }
 
@@ -38,12 +39,13 @@ class Author extends Model
     protected function updatedAtFormated(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->updated_at?->diffForHumans()
+            get: fn () => $this->updated_at?->diffForHumans()
         );
     }
-    public function posts() {
-        return $this->hasMany(post::class);
+
+    /** @return HasMany<Post, $this> */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }
-    
-

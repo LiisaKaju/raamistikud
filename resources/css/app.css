@@ -9,6 +9,27 @@
 
 @theme inline {
     --font-sans: Instrument Sans, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-journal-headline: 'Noto Serif', ui-serif, Georgia, serif;
+    --font-journal-body: Inter, ui-sans-serif, system-ui, sans-serif;
+
+    --color-journal-bg: #fbf9f5;
+    --color-journal-on-surface: #1b1c1a;
+    --color-journal-primary: #17341d;
+    --color-journal-on-primary: #ffffff;
+    --color-journal-secondary: #715a40;
+    --color-journal-secondary-container: #f9dbb9;
+    --color-journal-on-secondary-container: #755f44;
+    --color-journal-surface-low: #f5f3ef;
+    --color-journal-surface-container: #efeeea;
+    --color-journal-surface-container-high: #eae8e4;
+    --color-journal-surface-container-highest: #e4e2de;
+    --color-journal-surface-lowest: #ffffff;
+    --color-journal-primary-fixed: #c8ecc9;
+    --color-journal-primary-fixed-dim: #adcfae;
+    --color-journal-on-surface-variant: #424842;
+    --color-journal-outline-variant: #c2c8bf;
+    --color-journal-error: #ba1a1a;
+    --color-journal-tertiary-fixed: #d9eaa3;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -81,6 +102,29 @@
     html {
         --font-sans:
             'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    }
+
+    .journal-hero-gradient {
+        background: linear-gradient(to bottom, rgba(23, 52, 29, 0.4), rgba(23, 52, 29, 0.82));
+    }
+
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 1.25rem;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
     }
 }
 

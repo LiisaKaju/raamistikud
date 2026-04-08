@@ -2,28 +2,29 @@
 
 namespace App\Models;
 
-use App\Traits\HasFormattedDate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Comment extends Model
+class MyFavoriteSubject extends Model
 {
     use HasFactory;
-    use HasFormattedDate;
 
-    protected $guarded = [];
+    protected $table = 'my_favorite_subject';
 
-    protected $appends = [
-        'created_at_formatted',
-        'updated_at_formatted',
+    protected $fillable = [
+        'user_id',
+        'title',
+        'image',
+        'description',
+        'location',
+        'difficulty',
+        'distance_km',
     ];
 
-    public function post(): BelongsTo
-    {
-        return $this->belongsTo(Post::class);
-    }
-
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

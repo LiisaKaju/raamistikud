@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,18 +15,16 @@ class PostController extends Controller
     public function index()
     {
         return Inertia::render('posts/Index', [
-            'posts'=>Post::paginate(30),
+            'posts' => Post::withCount('comments')->latest()->paginate(30),
         ]);
     }
-    
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-
     {
-        return Inertia::render ('posts/Create');
+        return Inertia::render('posts/Create');
     }
 
     /**
@@ -34,22 +33,33 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'=>'required|string|max:255',
-            'description' =>'required|string',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
         ]);
 
-        Post::create($validated);
+        $authorId = Author::query()->value('id');
+        if ($authorId === null) {
+            $authorId = Author::create([
+                'first_name' => 'Vaikimisi',
+                'last_name' => 'Autor',
+                'date_of_birth' => '2000-01-01',
+            ])->id;
+        }
+
+        Post::create([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'author_id' => $authorId,
+            'published' => false,
+        ]);
 
         return redirect()->route('posts.index');
     }
 
-
-  
-
     public function show(Post $post)
     {
         return Inertia::render('posts/Show', [
-            'post'=> $post->loadMissing('comments.user')
+            'post' => $post->loadMissing(['comments.user']),
         ]);
     }
 
@@ -58,7 +68,6 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        
         return Inertia::render('posts/Edit', [
             'post' => $post,
         ]);
@@ -70,13 +79,13 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-    ]);
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
 
-    $post->update($validated);
+        $post->update($validated);
 
-    return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
 
     /**
@@ -84,8 +93,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-         $post->delete();
+        $post->delete();
 
-    return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 }
