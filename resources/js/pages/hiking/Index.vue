@@ -64,6 +64,11 @@ const applyFilters = () => {
 
 const myItems = computed(() => props.items.data.filter((item) => item.user?.id === props.auth.user.id));
 const otherItems = computed(() => props.items.data.filter((item) => item.user?.id !== props.auth.user.id));
+const difficultyLabel: Record<string, string> = {
+    easy: 'Lihtne',
+    medium: 'Keskmine',
+    hard: 'Raske',
+};
 
 type GeoapifyFeature = {
     properties?: {
@@ -122,14 +127,15 @@ const loadPlaces = async () => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 bg-journal-bg p-4 text-journal-on-surface sm:p-6">
             <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
-                <h1 class="text-2xl font-semibold text-journal-primary">Matka API andmed</h1>
+                <h1 class="text-2xl font-semibold text-journal-primary">Matkaradade API vaade</h1>
                 <p class="mt-2 text-sm text-journal-on-surface-variant">
-                    Lisa uusi matkaradu ja sirvi teiste lisatud kirjeid.
+                    Sellel lehel saad teha kolm asja: lisada rada, filtreerida olemasolevaid kirjeid ja proovida välise API otsingut.
                 </p>
             </section>
 
             <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
-                <h2 class="mb-4 text-lg font-semibold text-journal-primary">Lisa uus kirje</h2>
+                <h2 class="mb-2 text-lg font-semibold text-journal-primary">1) Lisa uus matkaraja kirje</h2>
+                <p class="mb-4 text-sm text-journal-on-surface-variant">Täida väljad ja salvesta. Kirje lisatakse sinu nime alla.</p>
                 <form class="grid gap-4 md:grid-cols-2" @submit.prevent="submit">
                     <div>
                         <label class="mb-1 block text-sm font-medium">Pealkiri</label>
@@ -157,9 +163,9 @@ const loadPlaces = async () => {
                     <div>
                         <label class="mb-1 block text-sm font-medium">Raskusaste</label>
                         <select v-model="form.difficulty" class="h-10 w-full rounded-md border border-input bg-transparent px-3 text-sm">
-                            <option value="easy">easy</option>
-                            <option value="medium">medium</option>
-                            <option value="hard">hard</option>
+                            <option value="easy">Lihtne</option>
+                            <option value="medium">Keskmine</option>
+                            <option value="hard">Raske</option>
                         </select>
                         <InputError :message="form.errors.difficulty" />
                     </div>
@@ -177,13 +183,17 @@ const loadPlaces = async () => {
             </section>
 
             <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
+                <h2 class="mb-2 text-lg font-semibold text-journal-primary">2) Otsi ja sorteeri kirjeid</h2>
+                <p class="mb-4 text-sm text-journal-on-surface-variant">
+                    Kasuta filtreid, et leida sobivad rajad. Tulemused on jaotatud sinu ja teiste kasutajate kirjeteks.
+                </p>
                 <div class="mb-4 grid gap-3 md:grid-cols-4">
                     <Input v-model="filterForm.q" placeholder="Otsi pealkirja/asukoha järgi..." />
                     <select v-model="filterForm.difficulty" class="h-10 rounded-md border border-input bg-transparent px-3 text-sm">
                         <option value="">Kõik raskused</option>
-                        <option value="easy">easy</option>
-                        <option value="medium">medium</option>
-                        <option value="hard">hard</option>
+                        <option value="easy">Lihtne</option>
+                        <option value="medium">Keskmine</option>
+                        <option value="hard">Raske</option>
                     </select>
                     <select v-model="filterForm.sort" class="h-10 rounded-md border border-input bg-transparent px-3 text-sm">
                         <option value="latest">Uuemad ees</option>
@@ -199,7 +209,9 @@ const loadPlaces = async () => {
                     <article v-for="item in myItems" :key="item.id" class="rounded-lg border border-journal-outline-variant/30 p-3">
                         <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-2 h-32 w-full rounded object-cover" />
                         <h4 class="font-semibold">{{ item.title }}</h4>
-                        <p class="text-sm text-journal-on-surface-variant">{{ item.location }} • {{ item.distance_km }} km • {{ item.difficulty }}</p>
+                        <p class="text-sm text-journal-on-surface-variant">
+                            {{ item.location }} • {{ item.distance_km }} km • {{ difficultyLabel[item.difficulty] || item.difficulty }}
+                        </p>
                         <p class="mt-1 text-sm">{{ item.description }}</p>
                     </article>
                     <p v-if="myItems.length === 0" class="text-sm text-journal-on-surface-variant">Sul pole veel kirjeid.</p>
@@ -211,7 +223,8 @@ const loadPlaces = async () => {
                         <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-2 h-32 w-full rounded object-cover" />
                         <h4 class="font-semibold">{{ item.title }}</h4>
                         <p class="text-sm text-journal-on-surface-variant">
-                            {{ item.location }} • {{ item.distance_km }} km • {{ item.difficulty }} • {{ item.user?.name }}
+                            {{ item.location }} • {{ item.distance_km }} km • {{ difficultyLabel[item.difficulty] || item.difficulty }} •
+                            {{ item.user?.name }}
                         </p>
                         <p class="mt-1 text-sm">{{ item.description }}</p>
                     </article>
@@ -220,19 +233,19 @@ const loadPlaces = async () => {
             </section>
 
             <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
-                <h3 class="mb-4 text-base font-semibold text-journal-primary">Live kohad Geoapify API-st</h3>
+                <h2 class="mb-2 text-lg font-semibold text-journal-primary">3) Välise API test (Geoapify)</h2>
                 <p class="mb-3 text-sm text-journal-on-surface-variant">
-                    Lihtotsing: sisesta märksõna ja vali kategooria. Otsing toimub vaikimisi Eesti piires.
+                    See plokk teeb live-päringu välisesse teenusesse. Vali kategooria, lisa märksõna ja lae tulemused.
                 </p>
                 <div class="mb-4 grid gap-3 md:grid-cols-3">
                     <select v-model="placesFilters.category" class="h-10 rounded-md border border-input bg-transparent px-3 text-sm">
-                        <option value="natural">natural</option>
-                        <option value="leisure.park">leisure.park</option>
-                        <option value="tourism.attraction">tourism.attraction</option>
-                        <option value="natural,leisure.park">natural + park</option>
+                        <option value="natural">Looduslik koht (natural)</option>
+                        <option value="leisure.park">Park (leisure.park)</option>
+                        <option value="tourism.attraction">Vaatamisväärsus (tourism.attraction)</option>
+                        <option value="natural,leisure.park">Loodus + park</option>
                     </select>
                     <Input v-model="placesFilters.q" placeholder="Otsi (nt raba, järv, matkarada)" />
-                    <Input v-model="placesFilters.limit" type="number" min="1" max="50" placeholder="Mitut tulemust näidata" />
+                    <Input v-model="placesFilters.limit" type="number" min="1" max="50" placeholder="Tulemuste arv (1-50)" />
                 </div>
                 <div class="mb-3">
                     <Button
