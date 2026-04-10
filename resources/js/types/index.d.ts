@@ -63,3 +63,4 @@ export interface WeatherData {
     speed: number;
     deg: number;
   };
+}
