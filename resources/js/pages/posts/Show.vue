@@ -37,7 +37,15 @@ const deleteComment = (id: number) => {
 const heroImage =
     'https://lh3.googleusercontent.com/aida-public/AB6AXuBFsmJhnkAKH2GVbyn98_LMWKy_HLY5LCMgXJ4Rn6Fb1Y7sg3Fra46LeGpD1eg1g1gQOToPZvNkO1cdc3WtBw8vKGN_2J2muoTPWg97q6cdM_9SiFXuvgkFfIK5GEUkiIpeh0l-i8yWBpFD0lqrKNApvHSlZZGgAPt6Hb-YYC932njnp8m_kIlx3nGSnJoN7R7JJdPyE1NxoT5MtrkinEyOxzb2xxWDWW4ZnPpf0W1T0v0ZXc2oaw4SFb2AAusIJ3Up3WyYIjxb5zKO';
 
-const inlineImage = `https://picsum.photos/seed/post-${props.post.id}/1200/500`;
+const natureImages = [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1622560480654-d96214fdc887?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1504280390368-3971d27453c7?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&w=1200&q=80',
+];
+const inlineImage = natureImages[props.post.id % natureImages.length];
 </script>
 
 <template>

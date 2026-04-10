@@ -87,6 +87,17 @@ defineProps<{
 const heroImage =
     'https://lh3.googleusercontent.com/aida-public/AB6AXuBFsmJhnkAKH2GVbyn98_LMWKy_HLY5LCMgXJ4Rn6Fb1Y7sg3Fra46LeGpD1eg1g1gQOToPZvNkO1cdc3WtBw8vKGN_2J2muoTPWg97q6cdM_9SiFXuvgkFfIK5GEUkiIpeh0l-i8yWBpFD0lqrKNApvHSlZZGgAPt6Hb-YYC932njnp8m_kIlx3nGSnJoN7R7JJdPyE1NxoT5MtrkinEyOxzb2xxWDWW4ZnPpf0W1T0v0ZXc2oaw4SFb2AAusIJ3Up3WyYIjxb5zKO';
 
+const natureImages = [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1622560480654-d96214fdc887?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1504280390368-3971d27453c7?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&w=1200&q=80',
+];
+
+const imageForPost = (post: Post) => natureImages[post.id % natureImages.length];
+
 const excerpt = (text: string, max = 220) => {
     const t = text.trim();
     if (t.length <= max) return t;
@@ -181,6 +192,8 @@ const deletePost = (postId: number) => {
                         <h2 class="mb-6 font-journal-headline text-3xl leading-tight text-journal-primary md:text-4xl">
                             <Link :href="show.url(post.id)" class="hover:underline">{{ post.title }}</Link>
                         </h2>
+
+                        <img :src="imageForPost(post)" :alt="post.title" class="mb-8 h-64 w-full rounded-lg object-cover" loading="lazy" />
 
                         <div class="mb-8 space-y-4 text-lg leading-relaxed text-journal-on-surface-variant">
                             <p class="text-xl font-medium italic text-journal-on-surface">
