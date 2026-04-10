@@ -30,27 +30,31 @@ const submit = () => {
     <Head title="Uus postitus" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div class="mx-auto h-full w-full max-w-2xl bg-muted p-4">
-                <h3 class="text-lg font-medium">Uus postitus</h3>
-                <form @submit.prevent="submit">
-                    <div class="mt-6 grid gap-4">
-                        <div>
-                            <Label for="title">Pealkiri</Label>
-                            <Input id="title" v-model="form.title" class="mt-1" name="title" />
-                            <InputError :message="form.errors.title" />
-                        </div>
-                        <div>
-                            <Label for="content">Sisu</Label>
-                            <Textarea id="content" v-model="form.content" class="mt-1" />
-                            <InputError :message="form.errors.content" />
-                        </div>
-                        <div class="mt-6 flex justify-end">
-                            <Button type="submit">Salvesta</Button>
-                        </div>
+        <div class="space-y-6 bg-journal-bg p-4 text-journal-on-surface sm:p-6">
+            <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
+                <h1 class="text-2xl font-semibold text-journal-primary">Uus postitus</h1>
+                <p class="mt-2 text-sm text-journal-on-surface-variant">
+                    Kirjuta uus postitus ja salvesta see blogisse.
+                </p>
+            </section>
+
+            <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
+                <form class="grid gap-5" @submit.prevent="submit">
+                    <div>
+                        <Label for="title">Pealkiri</Label>
+                        <Input id="title" v-model="form.title" class="mt-1" name="title" />
+                        <InputError :message="form.errors.title" class="mt-1" />
+                    </div>
+                    <div>
+                        <Label for="content">Sisu</Label>
+                        <Textarea id="content" v-model="form.content" class="mt-1" rows="8" />
+                        <InputError :message="form.errors.content" class="mt-1" />
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <Button type="submit" class="bg-journal-primary text-journal-on-primary hover:bg-journal-primary/90">Salvesta postitus</Button>
                     </div>
                 </form>
-            </div>
+            </section>
         </div>
     </AppLayout>
 </template>
