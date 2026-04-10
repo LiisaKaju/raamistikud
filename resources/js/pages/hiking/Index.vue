@@ -76,9 +76,9 @@ type GeoapifyFeature = {
 const placesFilters = useForm({
     category: 'natural',
     q: '',
-    lat: '59.437',
-    lon: '24.7536',
-    radius: '10000',
+    lat: '',
+    lon: '',
+    radius: '',
     limit: '8',
 });
 
@@ -221,13 +221,18 @@ const loadPlaces = async () => {
 
             <section class="rounded-xl border border-journal-outline-variant/30 bg-journal-surface-lowest p-6">
                 <h3 class="mb-4 text-base font-semibold text-journal-primary">Live kohad Geoapify API-st</h3>
+                <p class="mb-3 text-sm text-journal-on-surface-variant">
+                    Lihtotsing: sisesta märksõna ja vali kategooria. Otsing toimub vaikimisi Eesti piires.
+                </p>
                 <div class="mb-4 grid gap-3 md:grid-cols-3">
-                    <Input v-model="placesFilters.category" placeholder="category (nt natural)" />
-                    <Input v-model="placesFilters.q" placeholder="otsing (q), nt raba" />
-                    <Input v-model="placesFilters.limit" type="number" min="1" max="50" placeholder="limit" />
-                    <Input v-model="placesFilters.lat" placeholder="lat (nt 59.437)" />
-                    <Input v-model="placesFilters.lon" placeholder="lon (nt 24.7536)" />
-                    <Input v-model="placesFilters.radius" type="number" min="100" max="50000" placeholder="radius meetrites" />
+                    <select v-model="placesFilters.category" class="h-10 rounded-md border border-input bg-transparent px-3 text-sm">
+                        <option value="natural">natural</option>
+                        <option value="leisure.park">leisure.park</option>
+                        <option value="tourism.attraction">tourism.attraction</option>
+                        <option value="natural,leisure.park">natural + park</option>
+                    </select>
+                    <Input v-model="placesFilters.q" placeholder="Otsi (nt raba, järv, matkarada)" />
+                    <Input v-model="placesFilters.limit" type="number" min="1" max="50" placeholder="Mitut tulemust näidata" />
                 </div>
                 <div class="mb-3">
                     <Button
